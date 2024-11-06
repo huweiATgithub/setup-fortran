@@ -8,6 +8,9 @@ inputs:
   version:
     description: "Version of toolchain or compiler"
     required: false
+  extra_components:
+    description: "Extra components to install, split by `:`, for a complete list, see https://oneapi-src.github.io/oneapi-ci/"
+    required: false
 outputs:
   fc:
     description: "Path to Fortran compiler"
@@ -68,6 +71,7 @@ runs:
       env:
         COMPILER: ${{ inputs.compiler }}
         VERSION: ${{ inputs.version }}
+        EXTRA_COMPONENTS: ${{ inputs.extra_components }}
       run: |
         action_path=$(echo '/${{ github.action_path }}' | sed -e 's/\\/\//g' -e 's/://')
         source "$action_path/setup-fortran.sh"
@@ -83,23 +87,23 @@ runs:
         case $compiler in
           gcc)
             version=${VERSION:-13}
-            install_gcc $platform
+            install_gcc $platform ${EXTRA_COMPONENTS}
             ;;
           intel-classic)
             version=${VERSION:-2023.2.0}
-            install_intel $platform true
+            install_intel $platform true ${EXTRA_COMPONENTS}
             ;;
           intel)
             version=${VERSION:-2024.1}
-            install_intel $platform false
+            install_intel $platform false ${EXTRA_COMPONENTS}
             ;;
           nvidia-hpc)
             version=${VERSION:-23.11}
-            install_nvidiahpc $platform
+            install_nvidiahpc $platform ${EXTRA_COMPONENTS}
             ;;
           lfortran)
             version=${VERSION:-0.33.0}
-            install_lfortran $platform
+            install_lfortran $platform ${EXTRA_COMPONENTS}
             ;;
           *)
             exit 1

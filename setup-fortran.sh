@@ -431,6 +431,7 @@ install_intel_win()
 {
   local version=$1
   local classic=$2
+  local extra_components=$3
   intel_version_map_w $version $classic
 
   case $version in
@@ -471,6 +472,10 @@ install_intel_win()
       ;;
   esac
 
+  if [[ -n "$extra_components" ]]; then
+    WINDOWS_HPCKIT_COMPONENTS="$WINDOWS_HPCKIT_COMPONENTS:$extra_components"
+  fi
+
   "$GITHUB_ACTION_PATH/install-intel-windows.bat" $WINDOWS_HPCKIT_URL $WINDOWS_HPCKIT_COMPONENTS
 
   # don't call export_intel_vars here because the install may have
@@ -482,21 +487,22 @@ install_intel()
 {
   local platform=$1
   local classic=$2
+  local extra_components=$3
   case $platform in
     linux*)
-      install_intel_apt $version $classic
+      install_intel_apt $version $classic $extra_components
       ;;
     darwin*)
-      install_intel_dmg $version
+      install_intel_dmg $version $extra_components
       ;;
     mingw*)
-      install_intel_win $version $classic
+      install_intel_win $version $classic $extra_components
       ;;
     msys*)
-      install_intel_win $version $classic
+      install_intel_win $version $classic $extra_components
       ;;
     cygwin*)
-      install_intel_win $version $classic
+      install_intel_win $version $classic $extra_components
       ;;
     *)
       echo "Unsupported platform: $platform"
