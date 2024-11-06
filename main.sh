@@ -18,11 +18,11 @@ case $compiler in
     ;;
   intel-classic)
     version=${VERSION:-2023.2.0}
-    install_intel $platform true
+    install_intel $platform true ${ONLY_FORTRAN}
     ;;
   intel)
     version=${VERSION:-2025.0}
-    install_intel $platform false
+    install_intel $platform false ${ONLY_FORTRAN}
     ;;
   nvidia-hpc)
     version=${VERSION:-25.1}

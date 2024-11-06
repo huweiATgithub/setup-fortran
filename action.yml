@@ -8,6 +8,10 @@ inputs:
   version:
     description: "Version of toolchain or compiler"
     required: false
+  only_fortran:
+    description: "Only install Fortran compiler"
+    required: false
+    default: false
 outputs:
   fc:
     description: "Path to Fortran compiler"
@@ -40,7 +44,7 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: ${{ env.ONEAPI_ROOT }}
-        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}
+        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}-${{ inputs.only_fortran }}
 
     # Use micromamba for lfortran install on mac. Check if micromamba already
     # exists, only install it if needed. If we install it, clean it up after.
@@ -68,6 +72,7 @@ runs:
       env:
         COMPILER: ${{ inputs.compiler }}
         VERSION: ${{ inputs.version }}
+        ONLY_FORTRAN: ${{ inputs.only_fortran }}
       run: |
         cd $(echo '/${{ github.action_path }}' | sed -e 's/\\/\//g' -e 's/://')
         source ./main.sh
@@ -82,7 +87,7 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ${{ env.ONEAPI_ROOT }}
-        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}
+        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}-${{ inputs.only_fortran }}
     - name: Activate oneAPI
       if: runner.os == 'Windows' && contains(inputs.compiler, 'intel')
       shell: cmd

@@ -446,12 +446,18 @@ install_intel_win()
 {
   local version=$1
   local classic=$2
+  local only_fortran=$3
   intel_version_map_w $version $classic
 
   case $version in
     2025.0.1)
-      WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/a37c30c3-a846-4371-a85d-603e9a9eb94c/intel-oneapi-hpc-toolkit-2025.0.1.48_offline.exe
-      WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler:intel.oneapi.win.cpp-dpcpp-common
+      if $only_fortran; then
+        WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/0a91e6dc-9c09-4e0f-9113-1f28bf7e8be2/intel-fortran-essentials-2025.0.1.28_offline.exe
+        WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler
+      else
+        WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/a37c30c3-a846-4371-a85d-603e9a9eb94c/intel-oneapi-hpc-toolkit-2025.0.1.48_offline.exe
+        WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler:intel.oneapi.win.cpp-dpcpp-common
+      fi
       ;;
     2024.1.0)
       WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/c95a3b26-fc45-496c-833b-df08b10297b9/w_HPCKit_p_2024.1.0.561_offline.exe
@@ -490,6 +496,10 @@ install_intel_win()
       ;;
   esac
 
+  if $only_fortran; then
+    WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler
+  fi
+
   "$GITHUB_ACTION_PATH/install-intel-windows.bat" $WINDOWS_HPCKIT_URL $WINDOWS_HPCKIT_COMPONENTS
 
   # don't call export_intel_vars here because the install may have
@@ -501,6 +511,7 @@ install_intel()
 {
   local platform=$1
   local classic=$2
+  local only_fortran=$3
   case $platform in
     linux*)
       install_intel_apt $version $classic
@@ -509,13 +520,13 @@ install_intel()
       install_intel_dmg $version
       ;;
     mingw*)
-      install_intel_win $version $classic
+      install_intel_win $version $classic $only_fortran
       ;;
     msys*)
-      install_intel_win $version $classic
+      install_intel_win $version $classic $only_fortran
       ;;
     cygwin*)
-      install_intel_win $version $classic
+      install_intel_win $version $classic $only_fortran
       ;;
     *)
       echo "Unsupported platform: $platform"

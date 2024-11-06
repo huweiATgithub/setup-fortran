@@ -1,0 +1,82 @@
+name: Test Fortran only
+on:
+  push:
+    paths-ignore:
+      - "**.md"
+    tags-ignore:
+      - v**
+    branches: '*'
+  pull_request:
+    branches:
+      - main
+      - develop*
+    paths-ignore:
+      - "**.md"
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test Fortran only
+    strategy:
+      matrix:
+        os: [windows-2019, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Fortran only
+        id: setup-fortran
+        uses: ./
+        with:
+          compiler: intel
+          version: 2025.0.0
+          only_fortran: true
+
+      - name: List the installed directories
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ env.ONEAPI_ROOT }}" `
+            -Recurse -Directory `
+            | Foreach-Object { $_.FullName.Substring("${{ env.ONEAPI_ROOT }}".Length) }
+
+      - name: List the installed lib and dll
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ env.ONEAPI_ROOT }}" `
+            -Recurse -File -Include *.lib,*.dll `
+            | Foreach-Object { $_.FullName.Substring("${{ env.ONEAPI_ROOT }}".Length) }
+
+  test_classic:
+    name: Test Fortran only with classic
+    strategy:
+      matrix:
+        os: [windows-2019, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Fortran only
+        id: setup-fortran
+        uses: ./
+        with:
+          compiler: intel-classic
+          version: 2021.12.0
+          only_fortran: true
+
+      - name: List the installed directories
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ env.ONEAPI_ROOT }}" `
+            -Recurse -Directory `
+            | Foreach-Object { $_.FullName.Substring("${{ env.ONEAPI_ROOT }}".Length) }
+
+      - name: List the installed lib and dll
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "${{ env.ONEAPI_ROOT }}" `
+            -Recurse -File -Include *.lib,*.dll `
+            | Foreach-Object { $_.FullName.Substring("${{ env.ONEAPI_ROOT }}".Length) }
