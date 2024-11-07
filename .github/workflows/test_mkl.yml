@@ -37,7 +37,16 @@ jobs:
           version: 2025.0.0
           extra_components: intel.oneapi.win.mkl.devel
 
-      - name: List the installed directories (recursively)
+      - name: List the installed directories
         shell: pwsh
         run: |
-          Get-ChildItem -Recurse -Directory "${{ env.ONEAPI_ROOT }}"
+          Push-Location "${{ env.ONEAPI_ROOT }}"
+          Get-ChildItem -Recurse -Directory | Foreach-Object { $_.FullName.Substring($pwd.Path.Length + 1) }
+          Pop-Location
+
+      - name: List the installed lib and dll
+        shell: pwsh
+        run: |
+          Push-Location "${{ env.ONEAPI_ROOT }}"
+          Get-ChildItem -Recurse -File -Include *.lib,*.dll | Foreach-Object { $_.FullName.Substring($pwd.Path.Length + 1) }
+          Pop-Location
