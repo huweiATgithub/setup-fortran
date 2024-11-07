@@ -36,3 +36,8 @@ jobs:
           compiler: intel
           version: 2025.0.0
           extra_components: intel.oneapi.win.mkl.devel
+
+      - name: List the installed directories (recursively)
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse -Directory "${{ env.ONEAPI_ROOT }}"
