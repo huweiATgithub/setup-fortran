@@ -9,7 +9,7 @@ inputs:
     description: "Version of toolchain or compiler"
     required: false
   extra_components:
-    description: "Extra components to install, split by `:`, for a complete list, see https://oneapi-src.github.io/oneapi-ci/"
+    description: "Currently only supported for Intel 2025.0.0 on Windows. Extra components to install, separated by `:`, for a complete list, see https://oneapi-src.github.io/oneapi-ci/"
     required: false
 outputs:
   fc:
@@ -61,7 +61,7 @@ runs:
       if: runner.os == 'macOS' && contains(inputs.compiler, 'lfortran') && steps.check-umamba.outputs.install == 'true'
       with:
         init-shell: bash
-        post-cleanup: 'all'
+        post-cleanup: "all"
 
     # Set up the selected toolchain or compiler
     - name: Setup toolchain
@@ -75,7 +75,7 @@ runs:
       run: |
         action_path=$(echo '/${{ github.action_path }}' | sed -e 's/\\/\//g' -e 's/://')
         source "$action_path/setup-fortran.sh"
-        
+
         compiler=${COMPILER:-gcc}
         platform=$(uname -s | tr '[:upper:]' '[:lower:]')
 
@@ -94,7 +94,7 @@ runs:
             install_intel $platform true ${EXTRA_COMPONENTS}
             ;;
           intel)
-            version=${VERSION:-2024.1}
+            version=${VERSION:-2025.0.0}
             install_intel $platform false ${EXTRA_COMPONENTS}
             ;;
           nvidia-hpc)

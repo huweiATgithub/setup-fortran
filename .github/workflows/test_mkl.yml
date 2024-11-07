@@ -5,7 +5,7 @@ name: Test MKL
 on:
   push:
     paths-ignore:
-      - '**.md'
+      - "**.md"
     tags-ignore:
       - v**
   pull_request:
@@ -13,9 +13,9 @@ on:
       - main
       - develop*
     paths-ignore:
-      - '**.md'
+      - "**.md"
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: "0 0 * * 0"
   workflow_dispatch:
 
 jobs:
@@ -34,5 +34,5 @@ jobs:
         uses: ./
         with:
           compiler: intel
-          version: 2024.1
+          version: 2025.0.0
           extra_components: intel.oneapi.win.mkl.devel
