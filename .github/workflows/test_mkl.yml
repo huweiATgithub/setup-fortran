@@ -50,3 +50,35 @@ jobs:
           Push-Location "${{ env.ONEAPI_ROOT }}"
           Get-ChildItem -Recurse -File -Include *.lib,*.dll | Foreach-Object { $_.FullName.Substring($pwd.Path.Length + 1) }
           Pop-Location
+
+  test-classic:
+    name: Test MKL (classic)
+    strategy:
+      matrix:
+        os: [windows-2019, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Fortran with MKL
+        id: setup-fortran
+        uses: ./
+        with:
+          compiler: intel-classic
+          version: 2021.12
+          extra_components: intel.oneapi.win.mkl.devel
+
+      - name: List the installed directories
+        shell: pwsh
+        run: |
+          Push-Location "${{ env.ONEAPI_ROOT }}"
+          Get-ChildItem -Recurse -Directory | Foreach-Object { $_.FullName.Substring($pwd.Path.Length + 1) }
+          Pop-Location
+
+      - name: List the installed lib and dll
+        shell: pwsh
+        run: |
+          Push-Location "${{ env.ONEAPI_ROOT }}"
+          Get-ChildItem -Recurse -File -Include *.lib,*.dll | Foreach-Object { $_.FullName.Substring($pwd.Path.Length + 1) }
+          Pop-Location
