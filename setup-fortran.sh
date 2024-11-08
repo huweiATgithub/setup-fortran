@@ -436,8 +436,11 @@ install_intel_win()
 
   case $version in
     2025.0.0)
-      WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/f07e32fa-b505-4b90-8a79-e328ce9ad9d6/intel-oneapi-hpc-toolkit-2025.0.0.822_offline.exe
-      WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler:intel.oneapi.win.cpp-dpcpp-common
+      WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/2bff9d18-ac2b-40b1-8167-00156f466b0e/intel-fortran-essentials-2025.0.0.301_offline.exe
+      # WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/f07e32fa-b505-4b90-8a79-e328ce9ad9d6/intel-oneapi-hpc-toolkit-2025.0.0.822_offline.exe
+      WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler
+      # The fortran essentials has component intel.oneapi.win.ifort-compiler:intel.oneapi.win.dpcpp_debugger:intel.oneapi.win.mkl.devel:intel.oneapi.win.mpi.devel
+      # WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler:intel.oneapi.win.cpp-dpcpp-common
       ;;
     2024.1.0)
       WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/c95a3b26-fc45-496c-833b-df08b10297b9/w_HPCKit_p_2024.1.0.561_offline.exe
