@@ -431,16 +431,18 @@ install_intel_win()
 {
   local version=$1
   local classic=$2
-  local extra_components=$3
+  local only_fortran=$3
   intel_version_map_w $version $classic
 
   case $version in
     2025.0.0)
-      WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/2bff9d18-ac2b-40b1-8167-00156f466b0e/intel-fortran-essentials-2025.0.0.301_offline.exe
-      # WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/f07e32fa-b505-4b90-8a79-e328ce9ad9d6/intel-oneapi-hpc-toolkit-2025.0.0.822_offline.exe
-      WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler
-      # The fortran essentials has component intel.oneapi.win.ifort-compiler:intel.oneapi.win.dpcpp_debugger:intel.oneapi.win.mkl.devel:intel.oneapi.win.mpi.devel
-      # WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler:intel.oneapi.win.cpp-dpcpp-common
+      if $only_fortran; then
+        WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/2bff9d18-ac2b-40b1-8167-00156f466b0e/intel-fortran-essentials-2025.0.0.301_offline.exe
+        WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler
+      else
+        WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/f07e32fa-b505-4b90-8a79-e328ce9ad9d6/intel-oneapi-hpc-toolkit-2025.0.0.822_offline.exe
+        WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler:intel.oneapi.win.cpp-dpcpp-common
+      fi
       ;;
     2024.1.0)
       WINDOWS_HPCKIT_URL=https://registrationcenter-download.intel.com/akdlm/IRC_NAS/c95a3b26-fc45-496c-833b-df08b10297b9/w_HPCKit_p_2024.1.0.561_offline.exe
@@ -479,8 +481,8 @@ install_intel_win()
       ;;
   esac
 
-  if [[ -n "$extra_components" ]]; then
-    WINDOWS_HPCKIT_COMPONENTS="$WINDOWS_HPCKIT_COMPONENTS:$extra_components"
+  if $only_fortran; then
+    WINDOWS_HPCKIT_COMPONENTS=intel.oneapi.win.ifort-compiler
   fi
 
   "$GITHUB_ACTION_PATH/install-intel-windows.bat" $WINDOWS_HPCKIT_URL $WINDOWS_HPCKIT_COMPONENTS
@@ -494,22 +496,22 @@ install_intel()
 {
   local platform=$1
   local classic=$2
-  local extra_components=$3
+  local only_fortran=$3
   case $platform in
     linux*)
-      install_intel_apt $version $classic $extra_components
+      install_intel_apt $version $classic $only_fortran
       ;;
     darwin*)
-      install_intel_dmg $version $extra_components
+      install_intel_dmg $version $only_fortran
       ;;
     mingw*)
-      install_intel_win $version $classic $extra_components
+      install_intel_win $version $classic $only_fortran
       ;;
     msys*)
-      install_intel_win $version $classic $extra_components
+      install_intel_win $version $classic $only_fortran
       ;;
     cygwin*)
-      install_intel_win $version $classic $extra_components
+      install_intel_win $version $classic $only_fortran
       ;;
     *)
       echo "Unsupported platform: $platform"

@@ -8,9 +8,10 @@ inputs:
   version:
     description: "Version of toolchain or compiler"
     required: false
-  extra_components:
-    description: "Currently only supported for Intel 2025.0.0 on Windows. Extra components to install, separated by `:`, for a complete list, see https://oneapi-src.github.io/oneapi-ci/"
+  only_fortran:
+    description: "Only install Fortran compiler"
     required: false
+    default: false
 outputs:
   fc:
     description: "Path to Fortran compiler"
@@ -43,7 +44,7 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: ${{ env.ONEAPI_ROOT }}
-        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}-${{ inputs.extra_components }}
+        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}-${{ inputs.only_fortran }}
 
     # Use micromamba for lfortran install on mac. Check if micromamba already
     # exists, only install it if needed. If we install it, clean it up after.
@@ -71,7 +72,7 @@ runs:
       env:
         COMPILER: ${{ inputs.compiler }}
         VERSION: ${{ inputs.version }}
-        EXTRA_COMPONENTS: ${{ inputs.extra_components }}
+        ONLY_FORTRAN: ${{ inputs.only_fortran }}
       run: |
         action_path=$(echo '/${{ github.action_path }}' | sed -e 's/\\/\//g' -e 's/://')
         source "$action_path/setup-fortran.sh"
@@ -87,23 +88,23 @@ runs:
         case $compiler in
           gcc)
             version=${VERSION:-13}
-            install_gcc $platform ${EXTRA_COMPONENTS}
+            install_gcc $platform ${ONLY_FORTRAN}
             ;;
           intel-classic)
             version=${VERSION:-2023.2.0}
-            install_intel $platform true ${EXTRA_COMPONENTS}
+            install_intel $platform true ${ONLY_FORTRAN}
             ;;
           intel)
             version=${VERSION:-2025.0.0}
-            install_intel $platform false ${EXTRA_COMPONENTS}
+            install_intel $platform false ${ONLY_FORTRAN}
             ;;
           nvidia-hpc)
             version=${VERSION:-23.11}
-            install_nvidiahpc $platform ${EXTRA_COMPONENTS}
+            install_nvidiahpc $platform ${ONLY_FORTRAN}
             ;;
           lfortran)
             version=${VERSION:-0.33.0}
-            install_lfortran $platform ${EXTRA_COMPONENTS}
+            install_lfortran $platform ${ONLY_FORTRAN}
             ;;
           *)
             exit 1
@@ -120,7 +121,7 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ${{ env.ONEAPI_ROOT }}
-        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}-${{ inputs.extra_components }}
+        key: ${{ runner.os }}-${{ inputs.compiler }}-${{ inputs.version }}-${{ steps.get-date.outputs.date }}-${{ inputs.only_fortran }}
     - name: Activate oneAPI
       if: runner.os == 'Windows' && contains(inputs.compiler, 'intel')
       shell: cmd
